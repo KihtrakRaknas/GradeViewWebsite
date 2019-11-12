@@ -55,21 +55,21 @@
         return response.json();
       }).then((res)=>{
         
-        var d = new Date(res["lastCompletion"]), dformat = [ (d.getMonth()+1),
-                    d.getDate(),
+        var d = new Date(res["lastCompletion"]), dformat = [ (d.getMonth()+1).toString().padStart(2,'0'),
+                    d.getDate().toString().padStart(2,'0'),
                     d.getFullYear()].join('/')+
                     ' ' +
-                  [ d.getHours(),
-                    d.getMinutes(),
-                    d.getSeconds()].join(':');
+                  [ d.getHours().toString().padStart(2,'0'),
+                    d.getMinutes().toString().padStart(2,'0'),
+                    d.getSeconds().toString().padStart(2,'0')].join(':');
         
         document.getElementById("time").innerText = dformat
         
         var d = new Date(res["lastCompletion"]-res["secondLastCompletion"])
         
-         document.getElementById("duration").innerText = [ d.getHours(),
-                    d.getMinutes(),
-                    d.getSeconds()].join(':');
+         document.getElementById("duration").innerText = [ d.getHours().padLeft(),
+                    d.getMinutes().padLeft(),
+                    d.getSeconds().padLeft()].join(':');
         
       })
       
