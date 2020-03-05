@@ -16,7 +16,12 @@
       <p>Total users: <span id="total"></span></p>
       <p>Last scrape exicution: <span id="time"></span></p>
       <p>Duration of Last scrape: <span id="duration"></span></p>
-    
+
+      <p>Timestamped Users: <span id="timestampedTotal"></span></p>
+      <p>Users from the past day: <span id="timestampedDay"></span></p>
+      <p>Users from the past week: <span id="timestampedWeek"></span></p>
+      <p>Users from the past month: <span id="timestampedMonth"></span></p>
+      <p>Users from the past 2 months: <span id="timestamped2Months"></span></p>
 
       <br>
         <div class="input-group mb-3">
@@ -82,8 +87,34 @@
   return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
 }
       
-        
-        
+fetch('https://us-central1-gradeviewapp.cloudfunctions.net/api1/userTimestamps', {
+  method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            },
+          }).then((response) => {
+        console.log(typeof response)
+        return response.json();
+      }).then((res)=>{
+        document.getElementById("timestampedTotal").innerText = res.length
+        res.filter((item)=>{
+          return item.Timestamp > new Date().getTime()-1000*60*60*24
+        })
+        document.getElementById("timestampedDay").innerText = res.length
+        res.filter((item)=>{
+          return item.Timestamp > new Date().getTime()-1000*60*60*24*7
+        })
+        document.getElementById("timestampedWeek").innerText = res.length
+        res.filter((item)=>{
+          return item.Timestamp > new Date().getTime()-1000*60*60*24*30
+        })
+        document.getElementById("timestampedMonth").innerText = res.length
+        res.filter((item)=>{
+          return item.Timestamp > new Date().getTime()-1000*60*60*24*60
+        })
+        document.getElementById("timestamped2Months").innerText = res.length
+      })
         
         fetch('https://us-central1-gradeviewapp.cloudfunctions.net/api1/users', {
           method: 'GET',
@@ -108,8 +139,8 @@
             "email"
         ]
         };
-        var fuse = new Fuse(res, options); // "list" is the item array
         document.getElementById("total").innerText = res.length
+        var fuse = new Fuse(res, options); // "list" is the item array
           document.getElementById("input").addEventListener("input", function(){
             if(!document.getElementById("input").value){
                 let table = document.getElementById("table");
