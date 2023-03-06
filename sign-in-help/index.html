@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="icon" type="image/png" href="../REGENiconWroundedCorners.png" />
+
+  <!-- Include the Font Awesome library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+  <title>GradeView</title>
+</head>
+
+<body style="background-color: #373a6d" class="container">
+  <br>
+  <h1 class="display-4" style="color:white;text-align: center">Sign In Help</h1>
+  <br>
+  <div style="color:white">
+    <ul>
+      <li>Make sure you are using the correct username and password</li>
+      <li>For most districts you must use your <strong>student</strong> login (not parent login)</li>
+      <li>Make sure <em>One Time Password Authentication</em> is <strong>off</strong> (it is off by default)</li>
+      <li>Some students reported success after resetting their password</li>
+      <li>If you are still experiencing issues, reach out to <a
+          href="mailto:gradeview-sign-in-help@kihtrak.com">gradeview-sign-in-help@kihtrak.com</a>.</li>
+    </ul>
+    <br>
+    <h2 class="display-4" style="color:white;text-align: center">Testing</h1>
+      <p>Use this if you have tried everything else and you still cannot login. The result should be a genesis page with some kind of error.</p>
+      <form>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-user"></i></span>
+          </div>
+          <input type="text" class="form-control" placeholder="Enter username">
+        </div>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-lock"></i></span>
+          </div>
+          <input type="password" class="form-control" placeholder="Enter password">
+        </div>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fa fa-user-circle"></i></span>
+          </div>
+          <select class="form-control" id="schools">
+            <option value="">-- Select a domain --</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="submit" class="text-center">Submit</button>
+      </form>
+      <iframe style="display:none; width:100%; height: 100vh; background-color: white;"></iframe>
+  </div>
+
+  <script>
+    fetch('https://gradeviewapi.kihtrak.com/listSchools')
+      .then(response => response.json())
+      .then(data => {
+        const drop = document.getElementById("schools")
+        for (domain of data) {
+          const option = document.createElement("option")
+          option.value = domain
+          option.text = domain
+          drop.appendChild(option)
+        }
+      });
+
+    document.getElementById("submit").addEventListener("click", function (event) {
+      event.preventDefault();
+      const username = document.querySelector("input[type=text]").value
+      const password = document.querySelector("input[type=password]").value
+      const domain = document.getElementById("schools").value
+      if (domain == "") {
+        alert("Please select a domain")
+        return
+      }
+      fetch('https://gradeviewapi.kihtrak.com/testSignIn', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+          school: domain
+        })
+      })
+        .then(response => response.text())
+        .then(html => {
+          const iframe = document.querySelector('iframe');
+          const form = document.querySelector('form');
+          iframe.srcdoc = html;
+          iframe.style.display = "block";
+          form.style.display = "none";
+        });
+    })
+  </script>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
